@@ -36,13 +36,22 @@ program
     // path to csv (default csv)
     .action(function () {
         console.log("Creating score bundle...")
-        console.log("Publishing to db...")
         console.log("Publishing on-chain...")
+        console.log("Publishing to db...")
     });
 
 program
     .command('append')
     .description('Append scores to existing bundle (Signed scores pool only)')
+    .action(function () {
+        // switch to bundle selector (propose to select or type manually)
+        console.log("Publishing to db...")
+        console.log("Creating score bundle...")
+    });
+
+program
+    .command('delete')
+    .description('Deactivate bundle (requires commit)')
     .action(function () {
         // switch to bundle selector (propose to select or type manually)
         console.log("Publishing to db...")
