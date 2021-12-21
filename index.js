@@ -4,7 +4,9 @@
 
 const { Command } = require('commander');
 const program = new Command();
+const init = require('./init.js')
 const deployPoolWiz = require('./create-group-wiz.js');
+const publish = require('./publish-bundle.js')
 
 program.version('0.0.1');
 
@@ -12,8 +14,7 @@ program
     .command('init')
     .description('Creates config file and generates wallet')
     .action(function () {
-        console.log("Setting up config...");
-        console.log("Generating wallet...");
+        init();
 });
 
 program
@@ -35,9 +36,7 @@ program
     // .option("Bundle name")
     // path to csv (default csv)
     .action(function () {
-        console.log("Creating score bundle...")
-        console.log("Publishing on-chain...")
-        console.log("Publishing to db...")
+        publish()
     });
 
 program
