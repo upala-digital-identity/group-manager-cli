@@ -4,9 +4,7 @@
 
 const { Command } = require('commander');
 const program = new Command();
-const init = require('./init.js')
-const deployPoolWiz = require('./create-group-wiz.js');
-const publish = require('./publish-bundle.js')
+const { initialize, deployPoolWiz, publish } = require('./utils.js')
 
 program.version('0.0.1');
 
@@ -14,7 +12,7 @@ program
     .command('init')
     .description('Creates config file and generates wallet')
     .action(function () {
-        init();
+        initialize();
 });
 
 program
