@@ -2,63 +2,90 @@ const fs = require('fs')
 const { ethers } = require('ethers')
 const { deployPool, attachToPool, PoolManager } = require('@upala/group-manager')
 
-// INITIALIZATION 
-
-function initialize() {
-    return setupWallet()
-}
+// SETUP AND INITIALIZATION 
 
 function getConfig() {
-    // chain id
-    // mnemonic (or different wallet unlocker for the future)
-    // poolAddress
-    // workdir?
-    // wallet
+    try {
+        return JSON.parse(fs.readFileSync('config.json'))
+    } catch {
+        return null
+    }
 }
 
-function addToConfig(newConfig) {
-    fs.writeFileSync("config.json", JSON.stringify(newConfig, null, 2))
+function createConfig() {
+    if (getConfig() == null) {
+        const initialConfig = {
+            chainId: 31337, // todo put rinkeby here (change to local for dev)
+            mnemonic: 'test test test test test test test test test test test junk',
+            ethNodeUrl: 'http://localhost:8545',  // use infura or alchemy here
+            poolAddress: '',
+            poolType: 'SignedScoresPool',
+            workdir: './workdir',
+            csvDir: './input' 
+        }
+        fs.writeFileSync('config.json', JSON.stringify(initialConfig, null, 2))
+    } else {
+        console.log('Config already exists')
+    }
 }
 
-function setupWallet() {
-    const provider = new ethers.providers.JsonRpcProvider('http://localhost:8545')
-    const mnemonic = 'test test test test test test test test test test test junk'
+function saveNewConfig(newConfig) {
+    fs.writeFileSync('config.json', JSON.stringify(newConfig, null, 2))
+}
+
+function getWallet(mnemonic, ethNodeUrl) {
+    const provider = new ethers.providers.JsonRpcProvider(ethNodeUrl)
     return ethers.Wallet.fromMnemonic(mnemonic).connect(provider)
 }
 
-async function safeAttach() {
-    poolContract = await attachToPool('SignedScoresPool', poolManagerWallet, "0x524F04724632eED237cbA3c37272e018b3A7967e")
+function deployPoolHandler() {
+    const config = getConfig()
+    if (config) {
+        const poolContract = await deployPool(
+            poolType = config.poolType, 
+            wallet = getWallet(config.mnemonic, config.ethNodeUrl)
+        )
+        config.poolAddress = poolContract.address
+        saveNewConfig(config)
+        }
+    else {
+        console.log('No config run \"init\" first.')
+    }
 }
 
-async function loadPoolManager() {
-    const poolContract = await loadPoolContract()
-    return new PoolManager(poolContract, "./workdir", "./workdir")
+async function getPoolManager() {
+    const config = getConfig()
+    if (config == null) {
+        console.log('No config run \"init\" first.')
+        return null
+    }
+
+    const poolManagerWallet = getWallet(config.mnemonic, config.ethNodeUrl)
+    if (config.poolAddress) {
+        poolContract = await attachToPool(config.poolType, poolManagerWallet, config.poolAddress)
+        return new PoolManager(poolContract, config.workdir, config.workdir)
+    } else {
+        console.log('No pool address. Deploy pool first.')
+        return null
+    }
 }
+
+
+// HANDLERS
 
 // get users from input folder
-function loadUsers() {
+function loadUsers(dir) {
     return [
-        { address: '0x2819c144d5946404c0516b6f817a960db37d4929', score: "4" },
-        { address: '0xdac17f958d2ee523a2206206994597c13d831ec7', score: "5" }
+        { address: '0x2819c144d5946404c0516b6f817a960db37d4929', score: '4' },
+        { address: '0xdac17f958d2ee523a2206206994597c13d831ec7', score: '5' }
         ]
 }
 
-function deployPoolHandler() { 
-    const poolContract = await deployPool(
-        poolType = 'SignedScoresPool', 
-        wallet = setupWallet()
-    )
-    const newConfig = {
-        poolAddress: poolContract.address
-    }
-    addToConfig(newConfig)
-}
-
-// BUNDLES 
+// BUNDLES MANAGEMENT HANDLERS
 
 async function publishHandler() {
 
-    const poolManager = loadPoolManager()
+    const poolManager = getPoolManager()
     const users = loadUsers()
 
     // production
@@ -73,18 +100,23 @@ async function publishHandler() {
 // this is not testing for dublicates and for scores being decresed
 // (decreased scores take no effect on chain)
 async function appendHandler(bundleId){
-    const poolManager = loadPoolManager()
+    const poolManager = getPoolManager()
     const users = loadUsers()
     await poolManager.append(users, bundleId)
     // await poolManager.process()
 }
 
+async function processHandler(bundleId){
+    const poolManager = getPoolManager()
+    await poolManager.process()
+}
+
 function listBundlesHandler() {
-    return (await loadPoolManager()).getActiveBundlesList()
+    return (await getPoolManager()).getActiveBundlesList()
 }
 
 async function processHandler() {
-    const poolManager = await loadPoolManager()
+    const poolManager = await getPoolManager()
     await poolManager.process()
 }
 
