@@ -4,7 +4,9 @@
 
 const { Command } = require('commander');
 const program = new Command();
-const { initialize, deployPoolWiz, publish } = require('./utils.js')
+const { getConfig, initialize, deployPoolWiz, publish } = require('./utils.js')
+
+const config = getConfig()
 
 program.version('0.0.1');
 
@@ -12,14 +14,14 @@ program
     .command('init')
     .description('Creates config file and generates wallet')
     .action(function () {
-        initialize();
+        initialize(config);
 });
 
 program
     .command('deploy')
     .description('Deploy new group (pool)')
     .action(function () {
-        deployPoolWiz();
+        deployPoolWiz(config);
     });
 
 // Bundles
@@ -34,7 +36,7 @@ program
     // .option("Bundle name")
     // path to csv (default csv)
     .action(function () {
-        publish()
+        publish(config)
     });
 
 program
