@@ -12,21 +12,6 @@ function getConfig() {
     }
 }
 
-function createConfig(config) {
-    if (config != null) { throw new Error("Config already exists")}
-    const initialConfig = {
-        chainId: 31337, // todo put rinkeby here (change to local for dev)
-        mnemonic: 'test test test test test test test test test test test junk',
-        ethNodeUrl: 'http://localhost:8545',  // use infura or alchemy here
-        poolAddress: '',
-        poolType: 'SignedScoresPool',
-        workdir: './workdir',
-        csvDir: './input' 
-    }
-    fs.writeFileSync('config.json', JSON.stringify(initialConfig, null, 2))
-
-}
-
 function saveNewConfig(newConfig) {
     fs.writeFileSync('config.json', JSON.stringify(newConfig, null, 2))
 }
@@ -49,13 +34,29 @@ async function getPoolManager(config) {
 
 // get users from input folder
 function loadUsers(config) {
-    return [
-        { address: '0x2819c144d5946404c0516b6f817a960db37d4929', score: '4' },
-        { address: '0xdac17f958d2ee523a2206206994597c13d831ec7', score: '5' }
-        ]
+    const inputs = fs.readdirSync(config.inputDir)
+    if (inputs[0]) {
+        return JSON.parse(fs.readFileSync(path.join(fullDir, inputs[0])))
+    } else {
+        throw new Error('No users in input folder. Please provie a JSON file')
+    }
 }
 
 // HANDLERS
+
+function initHandler(config) {
+    if (config != null) { throw new Error("Config already exists")}
+    const initialConfig = {
+        chainId: 31337, // todo put rinkeby here (change to local for dev)
+        mnemonic: 'test test test test test test test test test test test junk',
+        ethNodeUrl: 'http://localhost:8545',  // use infura or alchemy here
+        poolAddress: '',
+        poolType: 'SignedScoresPool',
+        workdir: './workdir',
+        inputDir: './input'
+    }
+    fs.writeFileSync('config.json', JSON.stringify(initialConfig, null, 2))
+}
 
 function deployPoolHandler(config) {
     if (config == null) { throw new Error('No config run \"init\" first.') }
@@ -78,34 +79,32 @@ async function publishHandler(config) {
     // check if there are dublicates
     // same should be for append 
     await poolManager.publishNew(users)
-    // await poolManager.process()
 }
 
 // this is not testing for dublicates and for scores being decresed
 // (decreased scores take no effect on chain)
 async function appendHandler(config, bundleId){
     const poolManager = getPoolManager(config)
-    const users = loadUsers(config.csvDir)
+    const users = loadUsers(config)
     await poolManager.append(users, bundleId)
 }
 
 async function processHandler(config){
-    const poolManager = getPoolManager(config)
-    await poolManager.process()
+    (await getPoolManager(config)).process()
 }
 
 function listBundlesHandler(config) {
     return (await getPoolManager(config)).getActiveBundlesList()
 }
 
-async function processHandler(config) {
-    const poolManager = await getPoolManager(config)
-    await poolManager.process()
-}
+
 
 module.exports = {
     getConfig,
-    initialize,
-    publish,
-    deployPoolWiz
+    initHandler,
+    deployPoolHandler,
+    publishHandler,
+    appendHandler,
+    processHandler,
+    listBundlesHandler
 }

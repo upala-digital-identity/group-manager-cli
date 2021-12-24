@@ -4,57 +4,80 @@
 
 const { Command } = require('commander');
 const program = new Command();
-const { getConfig, initialize, deployPoolWiz, publish } = require('./utils.js')
+const {     
+    initHandler,
+    deployPoolHandler,
+    publishHandler,
+    appendHandler,
+    processHandler,
+    listBundlesHandler } = require('./utils.js')
 
 const config = getConfig()
 
 program.version('0.0.1');
 
+/*********
+INITIALIZE
+**********/
+
 program
     .command('init')
     .description('Creates config file and generates wallet')
     .action(function () {
-        initialize(config);
+        initHandler(config);
 });
 
 program
     .command('deploy')
     .description('Deploy new group (pool)')
     .action(function () {
-        deployPoolWiz(config);
+        deployPoolHandler(config);
     });
 
-// Bundles
-// Moves csv file throuhg the following folders (or similar)
-// csvs -> signed -> db -> live
-// if any file is under this procedure, do nothing
-// score bundles are named using date and user 
-// proposed name 2021-08-22-meta-game-friends
+/**************
+ MANAGE BUNDLES
+***************/
+     
 program
     .command('publish')
-    .description('Publish score bundle on-chain and to db')
-    // .option("Bundle name")
-    // path to csv (default csv)
+    .description('Publish score bundle on-chain')
     .action(function () {
-        publish(config)
+        publishHandler(config)
     });
 
 program
     .command('append')
     .description('Append scores to existing bundle (Signed scores pool only)')
+    .requiredOption('-b, --bundleId <bundleId>', 'specify a bundle ID to append to')
     .action(function () {
-        // switch to bundle selector (propose to select or type manually)
-        console.log("Publishing to db...")
-        console.log("Creating score bundle...")
+        if (options.bundleId) console.log(`- ${options.bundle}`);
+        appendHandler(config, options.bundleId)
     });
 
 program
-    .command('delete')
-    .description('Deactivate bundle (requires commit)')
+    .command('process')
+    .description('Finish bundle processing (if left unprocessed')
     .action(function () {
-        // switch to bundle selector (propose to select or type manually)
-        console.log("Publishing to db...")
-        console.log("Creating score bundle...")
+        processHandler(config)
     });
+
+program
+    .command('list')
+    .description('List active bundles')
+    .action(function () {
+        listBundlesHandler(config)
+    });
+
+/************
+ MANAGE OTHER
+*************/
+
+// setBaseScore(newScore)
+
+// deleteScoreBundleId(scoreBundleId)
+// getBaseScore()
+
+// withdrawFromPool(recipient, amount)
+// updateMetadata(newMetadata)
 
 program.parse(process.argv);
