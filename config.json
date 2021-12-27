@@ -1,3 +1,9 @@
 {
-  "poolAddress": "0x15998240863a95180DF4011C0F7C8F327C5269d3"
+  "chainId": 31337,
+  "mnemonic": "test test test test test test test test test test test junk",
+  "ethNodeUrl": "http://localhost:8545",
+  "poolAddress": "0x524F04724632eED237cbA3c37272e018b3A7967e",
+  "poolType": "SignedScoresPool",
+  "workdir": "workdir",
+  "inputDir": "./input"
 }

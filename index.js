@@ -4,7 +4,8 @@
 
 const { Command } = require('commander');
 const program = new Command();
-const {     
+const { 
+    getConfig,
     initHandler,
     deployPoolHandler,
     publishHandler,

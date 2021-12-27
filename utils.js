@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require('path')
 const { ethers } = require('ethers')
 const { deployPool, attachToPool, PoolManager } = require('@upala/group-manager')
 
@@ -26,7 +27,7 @@ async function getPoolManager(config) {
     if (config.poolAddress == '') { throw new Error('No pool address. Deploy pool first.') }
 
     const poolManagerWallet = getWallet(config)
-    poolContract = await attachToPool(config.poolType, poolManagerWallet, config.poolAddress)
+    const poolContract = await attachToPool(config.poolType, poolManagerWallet, config.poolAddress)
     return new PoolManager(poolContract, config.workdir, config.workdir)
 }
 
@@ -36,7 +37,7 @@ async function getPoolManager(config) {
 function loadUsers(config) {
     const inputs = fs.readdirSync(config.inputDir)
     if (inputs[0]) {
-        return JSON.parse(fs.readFileSync(path.join(fullDir, inputs[0])))
+        return JSON.parse(fs.readFileSync(path.join(config.inputDir, inputs[0])))
     } else {
         throw new Error('No users in input folder. Please provie a JSON file')
     }
@@ -52,13 +53,13 @@ function initHandler(config) {
         ethNodeUrl: 'http://localhost:8545',  // use infura or alchemy here
         poolAddress: '',
         poolType: 'SignedScoresPool',
-        workdir: './workdir',
+        workdir: 'workdir',
         inputDir: './input'
     }
     fs.writeFileSync('config.json', JSON.stringify(initialConfig, null, 2))
 }
 
-function deployPoolHandler(config) {
+async function deployPoolHandler(config) {
     if (config == null) { throw new Error('No config run \"init\" first.') }
     const poolContract = await deployPool(
         poolType = config.poolType, 
@@ -71,7 +72,7 @@ function deployPoolHandler(config) {
 // BUNDLES MANAGEMENT HANDLERS
 
 async function publishHandler(config) {
-    const poolManager = getPoolManager(config)
+    const poolManager = await getPoolManager(config)
     const users = loadUsers(config)
 
     // production
@@ -84,7 +85,7 @@ async function publishHandler(config) {
 // this is not testing for dublicates and for scores being decresed
 // (decreased scores take no effect on chain)
 async function appendHandler(config, bundleId){
-    const poolManager = getPoolManager(config)
+    const poolManager = await getPoolManager(config)
     const users = loadUsers(config)
     await poolManager.append(users, bundleId)
 }
@@ -93,7 +94,7 @@ async function processHandler(config){
     (await getPoolManager(config)).process()
 }
 
-function listBundlesHandler(config) {
+async function listBundlesHandler(config) {
     return (await getPoolManager(config)).getActiveBundlesList()
 }
 
