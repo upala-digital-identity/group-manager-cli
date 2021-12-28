@@ -49,8 +49,8 @@ program
 program
     .command('append')
     .description('Append scores to existing bundle (Signed scores pool only)')
-    .requiredOption('-b, --bundleId <bundleId>', 'specify a bundle ID to append to')
-    .action(function () {
+    .option('-b, --bundleId <bundleId>', 'specify a bundle ID to append to')
+    .action(function (options) {
         if (options.bundleId) console.log(`- ${options.bundle}`);
         appendHandler(config, options.bundleId)
     });
@@ -66,6 +66,7 @@ program
     .command('list')
     .description('List active bundles')
     .action(function () {
+        console.log("Active bundles:")
         listBundlesHandler(config)
     });
 

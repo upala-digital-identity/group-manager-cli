@@ -95,9 +95,9 @@ async function processHandler(config){
 }
 
 async function listBundlesHandler(config) {
-    return (await getPoolManager(config)).getActiveBundlesList()
+    console.log ((await getPoolManager(config)).getActiveBundlesList())
 }
-
+ 
 
 
 module.exports = {
