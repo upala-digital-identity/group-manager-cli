@@ -2,7 +2,7 @@
   "chainId": 31337,
   "mnemonic": "test test test test test test test test test test test junk",
   "ethNodeUrl": "http://localhost:8545",
-  "poolAddress": "0x524F04724632eED237cbA3c37272e018b3A7967e",
+  "poolAddress": "0x16eBC21B3d38Db5e3EE1a022bEBA8Ec87D4CDbe6",
   "poolType": "SignedScoresPool",
   "workdir": "workdir",
   "inputDir": "./input"

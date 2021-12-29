@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const { ethers } = require('ethers')
+const { ethers, utils } = require('ethers')
 const { deployPool, attachToPool, PoolManager } = require('@upala/group-manager')
 
 // SETUP AND INITIALIZATION 
@@ -61,12 +61,14 @@ function initHandler(config) {
 
 async function deployPoolHandler(config) {
     if (config == null) { throw new Error('No config run \"init\" first.') }
+    // TODO check if already deployed
     const poolContract = await deployPool(
         poolType = config.poolType, 
         wallet = getWallet(config)
     )
     config.poolAddress = poolContract.address
     saveNewConfig(config)
+    console.log("deployed new pool to %s", poolContract.address)
 }
 
 // BUNDLES MANAGEMENT HANDLERS
@@ -95,7 +97,19 @@ async function processHandler(config){
 }
 
 async function listBundlesHandler(config) {
+    console.log("Active bundles:")
     console.log ((await getPoolManager(config)).getActiveBundlesList())
+}
+
+async function setBaseScoreHandler(config, score) {
+    const wei = utils.parseUnits(score, 'ether')
+    ;(await getPoolManager(config)).setBaseScore(wei)
+    console.log('Pool base score is set to \$%s', utils.formatEther(wei))
+}
+
+async function getBaseScoreHandler(config) {
+    const wei = await (await getPoolManager(config)).getBaseScore()
+    console.log('Pool base score is \$%s', utils.formatEther(wei))
 }
  
 
@@ -107,5 +121,7 @@ module.exports = {
     publishHandler,
     appendHandler,
     processHandler,
-    listBundlesHandler
+    listBundlesHandler,
+    setBaseScoreHandler,
+    getBaseScoreHandler
 }

@@ -11,7 +11,9 @@ const {
     publishHandler,
     appendHandler,
     processHandler,
-    listBundlesHandler } = require('./utils.js')
+    listBundlesHandler,
+    setBaseScoreHandler,
+    getBaseScoreHandler } = require('./handlers.js')
 
 const config = getConfig()
 
@@ -38,46 +40,37 @@ program
 /**************
  MANAGE BUNDLES
 ***************/
-     
-program
-    .command('publish')
-    .description('Publish score bundle on-chain')
-    .action(function () {
-        publishHandler(config)
-    });
 
 program
-    .command('append')
-    .description('Append scores to existing bundle (Signed scores pool only)')
-    .option('-b, --bundleId <bundleId>', 'specify a bundle ID to append to')
-    .action(function (options) {
-        if (options.bundleId) console.log(`- ${options.bundle}`);
-        appendHandler(config, options.bundleId)
-    });
+    .command('bundle')
+    .description('Manage score bundles')
+    .option('-p, --publish', 'Publish score bundle on-chain from input folder')
+    .option('-a, --append <bundleId>', 'Append scores to existing bundle (Signed scores pool only)')
+    .option('-pp, --process', 'Finish bundle processing \(if left unprocessed\)')
+    .option('-l, --list', 'List active bundles')
+    .action(async function (options) {
+        if (options.publish) await publishHandler(config)
+        if (options.append) await appendHandler(config, options.append)
+        if (options.process) await processHandler(config)
+        if (options.list) listBundlesHandler(config)
+    })
 
 program
-    .command('process')
-    .description('Finish bundle processing (if left unprocessed')
-    .action(function () {
-        processHandler(config)
-    });
-
-program
-    .command('list')
-    .description('List active bundles')
-    .action(function () {
-        console.log("Active bundles:")
-        listBundlesHandler(config)
-    });
+  .command('base')
+  .description('Base score. DAI denominated in dollars (e.g. 0.1 = $0.1)')
+  .option('-s, --set <score>', 'set base score')
+  .option('-g, --get', 'get base score')
+  .action(async function (options) {
+    if (options.set) await setBaseScoreHandler(config, options.set)
+    if (options.get) await getBaseScoreHandler(config)
+  })
 
 /************
  MANAGE OTHER
 *************/
 
-// setBaseScore(newScore)
 
 // deleteScoreBundleId(scoreBundleId)
-// getBaseScore()
 
 // withdrawFromPool(recipient, amount)
 // updateMetadata(newMetadata)
