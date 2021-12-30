@@ -3,6 +3,9 @@ const path = require('path')
 const { ethers, utils } = require('ethers')
 const { deployPool, attachToPool, PoolManager } = require('@upala/group-manager')
 
+// TODO 
+// check transaction mining for transaction commands (withdraw, setBaseScore)
+
 // SETUP AND INITIALIZATION 
 
 function getConfig() {
@@ -44,6 +47,7 @@ function loadUsers(config) {
 }
 
 // HANDLERS
+// INIT
 
 function initHandler(config) {
     if (config != null) { throw new Error("Config already exists")}
@@ -59,6 +63,8 @@ function initHandler(config) {
     fs.writeFileSync('config.json', JSON.stringify(initialConfig, null, 2))
 }
 
+// POOL
+
 async function deployPoolHandler(config) {
     if (config == null) { throw new Error('No config run \"init\" first.') }
     // TODO check if already deployed
@@ -70,6 +76,18 @@ async function deployPoolHandler(config) {
     saveNewConfig(config)
     console.log("deployed new pool to %s", poolContract.address)
 }
+
+async function withdrawHandler(config, recipient, amount) {
+    const wei = utils.parseUnits(amount, 'ether')
+    ;(await getPoolManager(config)).withdrawFromPool(recipient, wei)
+    console.log('Withdrawn \$%s to %s', utils.formatEther(wei), recipient)
+}
+
+async function updateMetadataHandler(config, newMetadata) {
+    ;(await getPoolManager(config)).updateMetadata(newMetadata)
+    console.log('Updated pool metadata')
+}
+
 
 // BUNDLES MANAGEMENT HANDLERS
 
@@ -93,13 +111,21 @@ async function appendHandler(config, bundleId){
 }
 
 async function processHandler(config){
-    (await getPoolManager(config)).process()
+    ;(await getPoolManager(config)).process()
 }
 
 async function listBundlesHandler(config) {
     console.log("Active bundles:")
     console.log ((await getPoolManager(config)).getActiveBundlesList())
 }
+
+async function deleteBundlesHandler(config, bundleId) {
+    const poolManager = await getPoolManager(config)
+    await poolManager.deleteScoreBundleId(bundleId)
+    console.log('Pool base score is set to \$%s', utils.formatEther(wei))
+}
+
+// BASE SCORE
 
 async function setBaseScoreHandler(config, score) {
     const wei = utils.parseUnits(score, 'ether')
@@ -111,8 +137,6 @@ async function getBaseScoreHandler(config) {
     const wei = await (await getPoolManager(config)).getBaseScore()
     console.log('Pool base score is \$%s', utils.formatEther(wei))
 }
- 
-
 
 module.exports = {
     getConfig,
@@ -123,5 +147,8 @@ module.exports = {
     processHandler,
     listBundlesHandler,
     setBaseScoreHandler,
-    getBaseScoreHandler
+    getBaseScoreHandler,
+    deleteBundlesHandler,
+    withdrawHandler,
+    updateMetadataHandler
 }

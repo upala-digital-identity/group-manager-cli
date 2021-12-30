@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-// https://medium.com/jspoint/making-cli-app-with-ease-using-commander-js-and-inquirer-js-f3bbd52977ac
-
 
 const { Command } = require('commander');
 const program = new Command();
@@ -13,16 +11,16 @@ const {
     processHandler,
     listBundlesHandler,
     setBaseScoreHandler,
-    getBaseScoreHandler } = require('./handlers.js')
+    getBaseScoreHandler,
+    deleteBundlesHandler,
+    withdrawHandler,
+    updateMetadataHandler } = require('./handlers.js')
 
 const config = getConfig()
 
 program.version('0.0.1');
 
-/*********
-INITIALIZE
-**********/
-
+// INITIALIZE
 program
     .command('init')
     .description('Creates config file and generates wallet')
@@ -30,6 +28,7 @@ program
         initHandler(config);
 });
 
+// DEPLOY
 program
     .command('deploy')
     .description('Deploy new group (pool)')
@@ -37,42 +36,52 @@ program
         deployPoolHandler(config);
     });
 
-/**************
- MANAGE BUNDLES
-***************/
+// MANAGE BASE SCORE
+program
+    .command('base')
+    .description('Base score. DAI denominated in dollars (e.g. 0.1 = $0.1)')
+    .option('-s, --set <score>', 'set base score')
+    .option('-g, --get', 'get base score')
+    .action(async function (options) {
+        if (options.set) await setBaseScoreHandler(config, options.set)
+        if (options.get) await getBaseScoreHandler(config)
+    })
 
+// MANAGE BUNDLES
 program
     .command('bundle')
     .description('Manage score bundles')
-    .option('-p, --publish', 'Publish score bundle on-chain from input folder')
+    .option('-pub, --publish', 'Publish score bundle on-chain from input folder')
     .option('-a, --append <bundleId>', 'Append scores to existing bundle (Signed scores pool only)')
     .option('-pp, --process', 'Finish bundle processing \(if left unprocessed\)')
     .option('-l, --list', 'List active bundles')
+    .option('-del, --delete <bundleId>', 'Delete bundle id on-chain')
     .action(async function (options) {
+        // TODO allow only one option at a time
         if (options.publish) await publishHandler(config)
         if (options.append) await appendHandler(config, options.append)
         if (options.process) await processHandler(config)
         if (options.list) listBundlesHandler(config)
+        if (options.delete) deleteBundlesHandler(config, options.delete)
     })
 
+// MANAGE OTHER
+
 program
-  .command('base')
-  .description('Base score. DAI denominated in dollars (e.g. 0.1 = $0.1)')
-  .option('-s, --set <score>', 'set base score')
-  .option('-g, --get', 'get base score')
-  .action(async function (options) {
-    if (options.set) await setBaseScoreHandler(config, options.set)
-    if (options.get) await getBaseScoreHandler(config)
-  })
+    .command('metadata')
+    .description('Update metadata')
+    .argument('<metadata>', 'New metadata in JSON format') // TODO
+    .action(async function (metadata) {
+        await updateMetadataHandler(config, metadata);
+    });
 
-/************
- MANAGE OTHER
-*************/
-
-
-// deleteScoreBundleId(scoreBundleId)
-
-// withdrawFromPool(recipient, amount)
-// updateMetadata(newMetadata)
+program
+    .command('withdraw')
+    .description('Withdraw funds (may require a commit')
+    .argument('<recipient>', 'integer argument')
+    .argument('<amount>', 'DAI denominated in dollars (e.g. 0.1 = $0.1)')
+    .action(async (recipient, amount) => {
+        await withdrawHandler(config, recipient, amount)
+    })
 
 program.parse(process.argv);
