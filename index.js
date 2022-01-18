@@ -24,8 +24,9 @@ program.version('0.0.1');
 program
     .command('init')
     .description('Creates config file and generates wallet')
-    .action(function () {
-        initHandler(config);
+    .argument('<network>', 'Network by name (e.g. rinkeby)') // TODO
+    .action(function (network) {
+        initHandler(config, network);
 });
 
 // DEPLOY

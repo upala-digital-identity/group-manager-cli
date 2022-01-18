@@ -49,10 +49,15 @@ function loadUsers(config) {
 // HANDLERS
 // INIT
 
-function initHandler(config) {
+function initHandler(config, network) {
     if (config != null) { throw new Error("Config already exists")}
+
+    let networkID
+    if (network == '4' || network == "Rinkeby" || network == "Rinkeby") networkID = 4
+    if (network == '31337' || network == 'local') networkID = 31337
+
     const initialConfig = {
-        chainId: 31337, // todo put rinkeby here (change to local for dev)
+        chainId: networkID, // todo put rinkeby here (change to local for dev)
         mnemonic: 'test test test test test test test test test test test junk',
         ethNodeUrl: 'http://localhost:8545',  // use infura or alchemy here
         poolAddress: '',
@@ -122,14 +127,14 @@ async function listBundlesHandler(config) {
 async function deleteBundlesHandler(config, bundleId) {
     const poolManager = await getPoolManager(config)
     await poolManager.deleteScoreBundleId(bundleId)
-    console.log('Pool base score is set to \$%s', utils.formatEther(wei))
+    console.log('Deleted bundle id \$%s', bundleId)
 }
 
 // BASE SCORE
 
 async function setBaseScoreHandler(config, score) {
     const wei = utils.parseUnits(score, 'ether')
-    ;(await getPoolManager(config)).setBaseScore(wei)
+    await (await getPoolManager(config)).setBaseScore(wei)
     console.log('Pool base score is set to \$%s', utils.formatEther(wei))
 }
 
