@@ -52,9 +52,12 @@ function loadUsers(config) {
 function initHandler(config, network) {
     if (config != null) { throw new Error("Config already exists")}
 
+    // todo switch to Upala constants
     let networkID
     if (network == '4' || network == "Rinkeby" || network == "Rinkeby") networkID = 4
     if (network == '31337' || network == 'local') networkID = 31337
+    if (network == '100' || network == 'xDai' || network == 'xdai' || network == 'gnosis' || network == 'Gnosis') networkID = 100
+
 
     const initialConfig = {
         chainId: networkID, // todo put rinkeby here (change to local for dev)
