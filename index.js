@@ -23,8 +23,8 @@ program.version('0.0.1');
 // INITIALIZE
 program
     .command('init')
-    .description('Creates config file and generates wallet')
-    .argument('<network>', 'Network by name (e.g. rinkeby)') // TODO
+    .description('Creates config file')
+    .argument('<network>', 'Network by name (e.g. rinkeby, gnosis)') // TODO
     .action(function (network) {
         initHandler(config, network);
 });
