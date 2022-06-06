@@ -1,4 +1,4 @@
-# Upala group manager
+ё# Upala group manager
 
 Tools for Upala group managers. Create and manage groups via command line or integrate with your software. The lib behind this CLI is [group-manager lib](https://github.com/upala-digital-identity/group-manager)
 
@@ -86,13 +86,41 @@ The Signed scores type of pool stores score bundle hash on-chain. Group manager 
 
     node index.js bundle -pub
 
-If successful the command will create score bundle, push it on chain and save the result to **/workdir/live** folder.
+If successful the command will create score bundle, push it on chain and save the result to **/workdir/live** folder in JSON format.
+
+It should look something like this:
+
+    {
+      "public": {
+        "subBundleID": "0x0000000000000000000000000000000070a7f9588a9edcad135ccd639e185d08",
+        "bundleID": "0x0000000000000000000000000000000070a7f9588a9edcad135ccd639e185d08",
+        "signedUsers": [
+          {
+            "address": "0x8128729DacD29a7A00EFBc701F125631B6Bf37e0",
+            "score": "1",
+            "signature": "0xe54a2324568afb67f372f0aae00554f55b28b334fb225e65b76a62adb07432052390c0079470015cef82c3f91c1f4602fd3b300c05843f05690109f8c65d20ec1b"
+          },
+          {
+            "address": "0x81293901281f9F7294DB21119504C6df6B0ce765",
+            "score": "1",
+            "signature": "0x5a51c9e25ea28b5d3d85e6b3d19b30b43f1ef61524d5b029a64b6534dc47390d00e3f188d02830b4062f1e5db4b3c5f8106d5d22c80c87c58c8d8abdf20f37c31c"
+          }
+        ],
+        "poolAddress": "0xCD044F06451310b301a7645CCC3C52fde573AE71",
+        "poolManagerAddress": "0x1633092577b6e789863E8284d3db1393259e5D08",
+        "signature": "0xa2f23dac7edaf3cad2056de6f3f25382d28ce25e01f9f783439cbaa6a7a8086b10d0aac436df595771b7c694dcdc6daa147d63d1081537613dc0570817a068061b"
+      },
+      "ethTx": "0xbd3039725b3f4de720ef8e47aa71267d10073d1b18a0a7b9a007f7996410d7f6",
+      "ethTxMined": true,
+      "dbTransaction": "185d08.json",
+      "status": "live"
+    }
 
 #### - publish proofs somewhere open
 
-Now users (and bots) need to find their scores and proofs for these scores. Make sure to publish it somewhere accessible and well-known (a score explorer will be shipped soon to save you the bother of doing this).
+Now users (and bots) need to find their scores and proofs for these scores. All the neccessary data for that is in **public** field of the above JSON file. Make sure to publish it somewhere accessible and well-known (a score explorer will be shipped soon to save you the bother of doing this).
 
-You're all set. Now wait for bot liquidations. If there are too much liquidations, you've probably set If nothing happens try increasing your base score or individual scores. 
+After that you're all set. Now wait for bot liquidations. If there are too much liquidations, you've probably set If nothing happens try increasing your base score or individual scores. 
 
 If you wanna try to liquidate on of your own bots check out [bot-manager](https://github.com/upala-digital-identity/bot-manager-cli)
 
