@@ -6,6 +6,10 @@ Tools for Upala group managers. Create and manage groups via command line or int
 
 Steps in this section will let you deploy and setup your own pool and assign scores to users. After that users will be able to verify their scores and liquidate their ID and get their liquidation reward (which is equal to score)
 
+To list available commands use:
+
+    node index.js -h
+
 #### - initialize group manager directory
 
 Specify the network you want to work with.
@@ -93,7 +97,9 @@ Now users (and bots) need to find their scores and proofs for these scores. Make
 
 You're all set. Now wait for bot liquidations. If there are too much liquidations, you've probably set If nothing happens try increasing your base score or individual scores. 
 
-## Manage other
+If you wanna try to liquidate on of your own bots check out [bot-manager](https://github.com/upala-digital-identity/bot-manager-cli)
+
+## Other commands
 
 #### Set or update group metadata
 
@@ -124,3 +130,8 @@ Lists active bundles
     node index.js bundle -del
 
 Deletes bundle id on-chain
+
+#### List available commands:
+
+    node index.js -h
+

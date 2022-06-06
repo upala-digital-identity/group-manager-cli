@@ -1,9 +1,0 @@
-{
-  "chainId": 4,
-  "mnemonic": "test test test test test test test test test test test junk",
-  "ethNodeUrl": "https://eth-rinkeby.alchemyapi.io/v2/ekN9uwkVGag3yq9WbNmyN1-WnisiXW-x",
-  "poolAddress": "0x463B5763C47B34C180699e86573FEB74c3A820b1",
-  "poolType": "SignedScoresPool",
-  "workdir": "workdir",
-  "inputDir": "./input"
-}
