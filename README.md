@@ -1,6 +1,6 @@
 # Upala group manager
 
-Tools for Upala group managers. Create and manage groups via command line or integrate with your software. The lib behind this CLI is [here](https://github.com/upala-digital-identity/group-manager)
+Tools for Upala group managers. Create and manage groups via command line or integrate with your software. The lib behind this CLI is [group-manager lib](https://github.com/upala-digital-identity/group-manager)
 
 ## Quickstart
 
@@ -12,7 +12,7 @@ To list available commands use:
 
 #### - initialize group manager directory
 
-Specify the network you want to work with.
+Specify the network you want to work with. See available networks in [Upala constants](https://github.com/upala-digital-identity/constants)
 
     node index.js init gnosis
 
@@ -64,10 +64,7 @@ Per protocol a user can verify his or her score to a dapp if pool balance is hig
 
 Send 1 DAI to your contract (per this example). On real networks (e.g. Gnosis) send DAI from your real wallet. On test-nets (e.g. Rinkeby) use free-dai-to-the-world function TODO
 
-| Chain  | DAI contract |
-| ------------- | ------------- |
-| Rinkeby  | [0xbC0dFaA78fe7bc8248b9F857292f680a1630b0C5](https://rinkeby.etherscan.io/address/0xbC0dFaA78fe7bc8248b9F857292f680a1630b0C5#code)  |
-| Gnosis  | [0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d](https://blockscout.com/xdai/mainnet/address/0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d/transactions)  |
+See [Upala constants](https://github.com/upala-digital-identity/constants) for DAI contracts addresses.
 
 #### - assign scores to users
 
