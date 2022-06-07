@@ -1,4 +1,4 @@
-ё# Upala group manager
+# Upala group manager
 
 Tools for Upala group managers. Create and manage groups via command line or integrate with your software. The lib behind this CLI is [group-manager lib](https://github.com/upala-digital-identity/group-manager)
 
