@@ -14,6 +14,7 @@ const {
     getBaseScoreHandler,
     deleteBundlesHandler,
     withdrawHandler,
+    jackpotHandler,
     updateMetadataHandler } = require('./handlers.js')
 
 const config = getConfig()
@@ -83,6 +84,15 @@ program
     .argument('<amount>', 'DAI denominated in dollars (e.g. 0.1 = $0.1)')
     .action(async (recipient, amount) => {
         await withdrawHandler(config, recipient, amount)
+    })
+
+
+program
+    .command('jackpot')
+    .description('Testnets only!!! Send free dai to the pool address')
+    .argument('<amount>', 'DAI denominated in dollars (e.g. 0.1 = $0.1)')
+    .action(async (amount) => {
+        await jackpotHandler(config, amount)
     })
 
 program.parse(process.argv);

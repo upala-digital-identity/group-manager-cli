@@ -1,6 +1,7 @@
 config.json
 .DS_Store
 node_modules/
-workdir/
-config.json
 README.html
+*config.json
+*workdir/
+.env
